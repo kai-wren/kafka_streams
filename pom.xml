@@ -12,6 +12,7 @@
     <modules>
         <module>word-count</module>
         <module>table-lookup</module>
+        <module>assignments</module>
     </modules>
 
     <properties>
