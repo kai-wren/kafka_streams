@@ -4,7 +4,7 @@ import java.lang
 import java.util.Properties
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.common.serialization.{IntegerDeserializer, StringDeserializer, StringSerializer}
+import org.apache.kafka.common.serialization.{IntegerDeserializer, LongDeserializer, StringDeserializer, StringSerializer}
 import org.apache.kafka.streams.test.{ConsumerRecordFactory, OutputVerifier}
 import org.apache.kafka.streams.{StreamsConfig, TopologyTestDriver}
 import org.scalatest.FlatSpec
@@ -98,6 +98,7 @@ class FirstAssignmentAppSpec extends FlatSpec {
     assertValue("king")
     assertValue("Polonius")
     assertValue("Lord")
+    assertValue("Chamberlain")
     assertValue("Horatio")
     assertValue("friend")
     assertValue("to")
@@ -125,4 +126,5 @@ class FirstAssignmentAppSpec extends FlatSpec {
     "Polonius, Lord Chamberlain.",
     "Horatio, friend to Hamlet."
   )
+
 }
