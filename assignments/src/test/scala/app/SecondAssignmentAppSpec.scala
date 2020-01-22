@@ -19,12 +19,20 @@ class SecondAssignmentAppSpec extends FlatSpec {
   it should "convert each line of text to the length of that text" in {
     // When
     val testDriver = new TopologyTestDriver(testClass.viewsPerMinute(), config)
-//    testData.foreach(line => testDriver.pipeInput(factory.create(line)))
+    testData.foreach(line => {testDriver.pipeInput(factory.create(line))
+      Thread.sleep(10000)
+    })
 
     // Then
-//    assertValue(26)
+    assertValue(1)
+    assertValue(1)
+    assertValue(1)
+    assertValue(2)
+    assertValue(2)
+    assertValue(3)
 //
-//    assertResult(null)(testDriver.readOutput("views-per-min"))
+    assertValue(4)
+    assertResult(null)(testDriver.readOutput("views-per-min"))
 
     def assertValue(expected: Int): Unit = {
       OutputVerifier.compareValue(testDriver.readOutput("views-per-min",
@@ -43,15 +51,13 @@ class SecondAssignmentAppSpec extends FlatSpec {
   }
 
   val testData = List(
-    "{\"ROWTIME\":1579362837432,\"ROWKEY\":\"User_4\",\"USERID\":\"User_4\",\"PAGEID\":\"Page_99\",\"REGIONID\":\"Region_9\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362837599,\"ROWKEY\":\"User_2\",\"USERID\":\"User_2\",\"PAGEID\":\"Page_14\",\"REGIONID\":\"Region_9\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362837623,\"ROWKEY\":\"User_4\",\"USERID\":\"User_4\",\"PAGEID\":\"Page_97\",\"REGIONID\":\"Region_9\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362838069,\"ROWKEY\":\"User_1\",\"USERID\":\"User_1\",\"PAGEID\":\"Page_30\",\"REGIONID\":\"Region_4\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362838131,\"ROWKEY\":\"User_2\",\"USERID\":\"User_2\",\"PAGEID\":\"Page_68\",\"REGIONID\":\"Region_9\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362838539,\"ROWKEY\":\"User_1\",\"USERID\":\"User_1\",\"PAGEID\":\"Page_64\",\"REGIONID\":\"Region_4\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362839574,\"ROWKEY\":\"User_1\",\"USERID\":\"User_1\",\"PAGEID\":\"Page_65\",\"REGIONID\":\"Region_7\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362839901,\"ROWKEY\":\"User_1\",\"USERID\":\"User_1\",\"PAGEID\":\"Page_74\",\"REGIONID\":\"Region_7\",\"GENDER\":\"FEMALE\"}",
-  "{\"ROWTIME\":1579362840346,\"ROWKEY\":\"User_1\",\"USERID\":\"User_1\",\"PAGEID\":\"Page_25\",\"REGIONID\":\"Region_2\",\"GENDER\":\"FEMALE\"}"
+  "{\"viewtime\": \"1579362788000\", \"userid\": \"User_1\", \"pageid\": \"Page_1\" }",
+    "{\"viewtime\": \"1579362798000\", \"userid\": \"User_1\", \"pageid\": \"Page_2\" }",
+    "{\"viewtime\": \"1579362808000\", \"userid\": \"User_2\", \"pageid\": \"Page_3\" }",
+    "{\"viewtime\": \"1579362818000\", \"userid\": \"User_3\", \"pageid\": \"Page_1\" }",
+    "{\"viewtime\": \"1579362828000\", \"userid\": \"User_4\", \"pageid\": \"Page_2\" }",
+    "{\"viewtime\": \"1579362838000\", \"userid\": \"User_2\", \"pageid\": \"Page_2\" }",
+  "{\"viewtime\": \"1579362838000\", \"userid\": \"User_2\", \"pageid\": \"Page_2\" }"
   )
 
 }
