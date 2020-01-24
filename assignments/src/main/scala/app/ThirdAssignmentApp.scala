@@ -1,9 +1,19 @@
 package app
 
 import java.util.Properties
+import java.util.concurrent.TimeUnit
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.streams.{KafkaStreams, StreamsConfig, Topology}
+import org.apache.kafka.streams.scala.StreamsBuilder
+import org.apache.kafka.streams.scala.kstream.{KStream, KTable}
+import org.apache.kafka.streams.scala._
+import org.apache.kafka.streams.scala.ImplicitConversions._
+import Serdes._
+import org.apache.kafka.streams.kstream.{Joined, TimeWindows}
+
+
+import scala.util.parsing.json.JSON
 
 class ThirdAssignmentApp {
 
@@ -13,7 +23,39 @@ class ThirdAssignmentApp {
     * Use unit tests to create and validate the topology
     */
   def accountCancellationLastVisitedPage(): Topology = {
-    throw new RuntimeException("not yet implemented")
+    val builder: StreamsBuilder = new StreamsBuilder()
+    val pageStream: KStream[String, String] = builder.stream[String, String]("pageviews")
+    val userStream: KStream[String, String] = builder.stream[String, String]("users")
+
+    val processedUserStream = userStream.map((k, v) => {val result = JSON.parseFull(v)
+      result match {
+        case Some(map: Map[String, Any]) => (map("userid").toString,
+          Option(map("value")) match {
+            case Some(v) => map("value").toString
+            case None => "null"
+          })
+        case None => ("null", "null")
+      }
+    }).groupByKey.reduce((v1, v2)=> v2).toStream.filter((k, v)=> v == "null")
+
+//    processedUserStream.peek((k, v)=> println(k, v))
+
+    val processedPageStream = pageStream.map((k, v) => {val result = JSON.parseFull(v)
+      result match {
+        case Some(map: Map[String, Any]) => (map("userid").toString, map("pageid").toString)
+        case None => ("null", "null")
+      }
+    }).groupByKey.reduce((v1, v2)=> v2)
+
+//    processedPageStream.toStream.peek((k, v)=> println(k, v))
+
+    val res = processedUserStream.leftJoin(processedPageStream)((lV: String, rV: String)=> rV)(Joined.keySerde(Serdes.String).withValueSerde(Serdes.String)
+    ).peek((k, v)=> println(k, v))
+
+
+
+    builder.build()
+
   }
 }
 
@@ -26,8 +68,8 @@ object ThirdAssignmentApp extends App {
     p
   }
 
-  val app = new SecondAssignmentApp
-  val topology = app.viewsPerMinute()
+  val app = new ThirdAssignmentApp
+  val topology = app.accountCancellationLastVisitedPage()
   println(topology.describe)
 
   val streams: KafkaStreams = new KafkaStreams(topology, props)
