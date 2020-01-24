@@ -41,7 +41,7 @@ class FirstAssignmentApp {
   def lineLengths(): Topology = {
     val builder: StreamsBuilder = new StreamsBuilder()
     val inputText: KStream[String, String] = builder.stream[String, String]("text-input")
-    val textLength: KStream[String, Int] = inputText.mapValues(_.length())
+    val textLength: KStream[String, Int] = inputText.mapValues(_.length()) //counting length of input string
     val outputLength = textLength.to("line-length")
     builder.build()
 
@@ -65,6 +65,7 @@ class FirstAssignmentApp {
     val builder: StreamsBuilder = new StreamsBuilder()
     val inputText: KStream[String, String] = builder.stream[String, String]("text-input")
     val wordsCount: KStream[String, Int] = inputText.mapValues(_.toLowerCase()).mapValues(_.split("\\W+").length)
+    //mapping words to lower case and splitting those to count its number
     val outputCount = wordsCount.to("word-count-per-line")
     builder.build()
   }
@@ -77,6 +78,7 @@ class FirstAssignmentApp {
     val builder: StreamsBuilder = new StreamsBuilder()
     val inputText: KStream[String, String] = builder.stream[String, String]("text-input")
     val containsWord: KStream[String, String] = inputText.filter((_, v) => v.toLowerCase.contains(word.toLowerCase()))
+    // mapping words to lowercase and check if given word is present or not in the string
     val outputLine = containsWord.to("contains-word")
     builder.build()
   }
@@ -89,6 +91,7 @@ class FirstAssignmentApp {
     val builder: StreamsBuilder = new StreamsBuilder()
     val inputText: KStream[String, String] = builder.stream[String, String]("text-input")
     val allWords: KStream[String, String] = inputText.flatMapValues(_.split("\\W+"))
+    //split line into individual words and sent those into topic
     val outputWords = allWords.to("all-the-words")
     builder.build()
   }

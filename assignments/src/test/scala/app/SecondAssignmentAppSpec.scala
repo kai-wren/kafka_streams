@@ -13,16 +13,20 @@ class SecondAssignmentAppSpec extends FlatSpec {
 
   val testClass = new SecondAssignmentApp()
   val factory = new ConsumerRecordFactory[String, String]("pageviews",
-    new StringSerializer, new StringSerializer)
+    new StringSerializer, new StringSerializer) //creating factory for topic pageviews
 
   it should "count number of visits per page within a one minute long time intervals" in {
     // When
     val testDriver = new TopologyTestDriver(testClass.viewsPerMinute(), config)
-    testData1.foreach(line =>testDriver.pipeInput(factory.create(line)))
+    testData1.foreach(line =>testDriver.pipeInput(factory.create(line))) //feeding data to input streams
     testData2.foreach(line =>testDriver.pipeInput(factory.create(line)))
 
 
 //     Then first execution within a minute
+    // I wasn't able to simulate course of time during testing. Threads.sleep() doesn't help either.
+    // Hence I was able to validate expected behavior by running test multiple times within a same minute.
+    // For this reason I am providing assert values for first and second run. So that two subsequent runs could be used to perform full testing
+    // To be commented for first run
     assertValue(1)
     assertValue(1)
     assertValue(1)
@@ -35,6 +39,7 @@ class SecondAssignmentAppSpec extends FlatSpec {
     assertValue(6)
 
 //    //     Then second execution within a minute
+    // To be uncommented for second run
 //    assertValue(3)
 //    assertValue(7)
 //    assertValue(2)

@@ -26,17 +26,17 @@ class SecondAssignmentApp {
     val builder: StreamsBuilder = new StreamsBuilder()
     val inputStream: KStream[String, String] = builder.stream[String, String]("pageviews")
 
-    val processedStream = inputStream.map((k, v) => {val result = JSON.parseFull(v)
+    val processedStream = inputStream.map((k, v) => {val result = JSON.parseFull(v) //parsing info from JSON format
       result match {
-        case Some(map: Map[String, Any]) => (map("pageid").toString, 1)
+        case Some(map: Map[String, Any]) => (map("pageid").toString, 1) //remapping key and putting 1 as value
         case None => ("null", 0)
       }
-    }).groupByKey
+    }).groupByKey //grouping data by new key - pageid
 
-    processedStream.windowedBy(TimeWindows.of(TimeUnit.MINUTES.toMillis(1))).reduce((v1, v2)=>v1+v2)
-    .toStream.map((k,v)=>(k.toString, v)).to("views-per-min")
+    processedStream.windowedBy(TimeWindows.of(TimeUnit.MINUTES.toMillis(1))).reduce((v1, v2)=>v1+v2) //performing windowed reduce of grouped data to count number of events within a minute.
+    .toStream.map((k,v)=>(k.toString, v)).to("views-per-min") //feeding data to output topic
 
-    builder.build()
+    builder.build() //building topology
 
   }
 }
@@ -45,7 +45,7 @@ class SecondAssignmentApp {
     val props: Properties = {
       val r = scala.util.Random
       val p = new Properties()
-      p.put(StreamsConfig.APPLICATION_ID_CONFIG, "assignment-2-aggregate"+r.nextInt.toString)
+      p.put(StreamsConfig.APPLICATION_ID_CONFIG, "assignment-2-aggregate"+r.nextInt.toString) // assigning random number due to issue on windows with dir folder is not removed on cleanup
       p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
       p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
       p
